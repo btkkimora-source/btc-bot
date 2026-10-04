@@ -1,0 +1,13 @@
+{
+  "is_demo": true,
+  "updated": "demo",
+  "price": 65000.00, "trend": "BULLISH", "signal": "LONG", "confidence": 80,
+  "risk_reward": 2, "ema9": 64950.10, "ema21": 64820.55, "rsi": 57.4, "atr": 210.30,
+  "structure": "HH → HL", "bos": "BULLISH",
+  "entry": 65000.00, "stop": 64685.00, "tp1": 65315.00, "tp2": 65630.00,
+  "stats": {"balance": 10000.00, "pnl": 0.00, "win_rate": 0, "trades": 0, "max_drawdown": 0},
+  "recent_signals": [
+    {"time": "demo 12:00", "signal": "LONG", "entry": 65000.00},
+    {"time": "demo 11:45", "signal": "NO TRADE", "entry": null}
+  ]
+}
