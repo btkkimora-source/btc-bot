@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BTC 15M Bot</title>
+<style>
+:root{--bg:#0e1116;--card:#171c24;--tx:#f2f4f8;--mu:#8b95a5;--g:#2ecc71;--r:#ff5252;--y:#f5b942}
+@media(prefers-color-scheme:light){:root{--bg:#f3f5f8;--card:#fff;--tx:#111;--mu:#667}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:-apple-system,system-ui,sans-serif;
+padding:env(safe-area-inset-top) 14px env(safe-area-inset-bottom)}
+.wrap{max-width:900px;margin:auto;padding:12px 0 40px}
+h1{font-size:15px;color:var(--mu);margin:8px 0}
+.demo{background:var(--y);color:#000;padding:8px;border-radius:10px;font-size:13px;text-align:center;margin-bottom:12px}
+.price{font-size:40px;font-weight:700;margin:4px 0 14px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(min-width:700px){.grid{grid-template-columns:repeat(4,1fr)}}
+.card{background:var(--card);border-radius:14px;padding:14px}
+.card.wide{grid-column:1/-1}
+.l{font-size:12px;color:var(--mu);letter-spacing:.05em}
+.v{font-size:22px;font-weight:600;margin-top:4px}
+.big{font-size:30px}
+.green{color:var(--g)}.red{color:var(--r)}.grey{color:var(--mu)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+td,th{padding:8px 4px;text-align:left;border-bottom:1px solid #8883}
+h2{font-size:16px;margin:22px 0 8px}
+</style></head><body><div class="wrap">
+<h1>BTC/USDT · 15 MIN · PAPER TRADING</h1>
+<div id="demo" class="demo"></div>
+<div class="price" id="price">…</div>
+<div class="grid" id="grid"></div>
+<h2>Recent Signals</h2>
+<div class="card"><table id="sigs"></table></div>
+<div class="l" id="upd" style="margin-top:14px"></div>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+const cls=t=>/BULL|LONG/.test(t)?'green':/BEAR|SHORT/.test(t)?'red':'grey';
+const icon=t=>/BULL|LONG/.test(t)?'🟢 ':/BEAR|SHORT/.test(t)?'🔴 ':'⚪ ';
+const usd=n=>n==null?'—':'$'+Number(n).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+function card(l,v,c='',w=''){return `<div class="card ${w}"><div class="l">${l}</div><div class="v ${c}">${v}</div></div>`}
+fetch('data.json?t='+Date.now()).then(r=>r.json()).then(d=>{
+ $('demo').textContent=d.is_demo?'⚠️ DEMO DATA – not real market data or real results':'';
+ if(!d.is_demo)$('demo').style.display='none';
+ $('price').textContent=usd(d.price);
+ $('grid').innerHTML=
+  card('15 MIN TREND',icon(d.trend)+d.trend,cls(d.trend))+
+  card('SIGNAL',icon(d.signal)+d.signal,cls(d.signal)+' big')+
+  card('CONFIDENCE',d.confidence+'%')+
+  card('RISK / REWARD','1 : '+d.risk_reward)+
+  card('EMA 9',usd(d.ema9))+card('EMA 21',usd(d.ema21))+
+  card('RSI 14',d.rsi)+card('ATR 14',usd(d.atr))+
+  card('MARKET STRUCTURE',d.structure)+card('BOS',icon(d.bos)+d.bos,cls(d.bos))+
+  card('ENTRY',usd(d.entry))+card('STOP',usd(d.stop),'red')+
+  card('TP1',usd(d.tp1),'green')+card('TP2',usd(d.tp2),'green')+
+  card('PAPER BALANCE',usd(d.stats.balance))+card('PROFIT/LOSS',usd(d.stats.pnl))+
+  card('WIN RATE',d.stats.win_rate+'% ('+d.stats.trades+' trades)')+card('MAX DRAWDOWN',d.stats.max_drawdown+'%');
+ $('sigs').innerHTML='<tr><th>Time</th><th>Signal</th><th>Entry</th></tr>'+
+  d.recent_signals.map(s=>`<tr><td>${s.time}</td><td class="${cls(s.signal)}">${icon(s.signal)}${s.signal}</td><td>${usd(s.entry)}</td></tr>`).join('');
+ $('upd').textContent='Last updated: '+d.updated;
+}).catch(e=>{$('price').textContent='Could not load data.json'});
+</script></body></html>
